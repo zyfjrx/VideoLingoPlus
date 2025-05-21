@@ -145,7 +145,7 @@ def transcribe_audio(raw_audio_file, vocal_audio_file, start, end,console):
     # 保存语言设置
     update_key("whisper.language", result['language'])
     if result['language'] == 'zh' and WHISPER_LANGUAGE != 'zh':
-        model_manager.cleanup()
+        # model_manager.cleanup()
         raise ValueError("Please specify the transcription language as zh and try again!")
 
     # 对齐音频

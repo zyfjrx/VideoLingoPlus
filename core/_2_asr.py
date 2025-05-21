@@ -8,6 +8,7 @@ import os
 from core.utils.models_batch import PathManager
 from pathlib import Path
 import threading
+import pandas as pd
 # 为每个线程创建一个 Console 实例
 thread_local = threading.local()
 
@@ -59,20 +60,31 @@ def transcribe(video_file):
     elif runtime == "elevenlabs":
         from core.asr_backend.elevenlabs_asr import transcribe_audio_elevenlabs as ts
         console.print("[cyan]🎤 Transcribing audio with ElevenLabs API...[/cyan]")
+    elif runtime == "funasr":
+        from core.asr_backend.funASR_local import funasr_transcribe_audio as ts
 
     # for start, end in segments:
-    duration = float(mediainfo(RAW_AUDIO_FILE)["duration"])
-    result = ts(RAW_AUDIO_FILE, vocal_audio, 0, duration,console)
-    all_results.append(result)
+    for start, end in segments:
+        result = ts(RAW_AUDIO_FILE, vocal_audio, start, end,console)
+        all_results.append(result)
     
     # 5. Combine results
+
     combined_result = {'segments': []}
     for result in all_results:
         combined_result['segments'].extend(result['segments'])
     
     # 6. Process df
-    df = process_transcription(combined_result)
-    save_results(df,LOG, CLEANED_CHUNKS)
+    if runtime == 'funasr':
+        all_words = []
+        for segment in result['segments']:
+            all_words.extend(segment['words'])
+        df = pd.DataFrame(all_words)
+        os.makedirs(LOG, exist_ok=True)
+        df.to_excel(CLEANED_CHUNKS, index=False)
+    else:
+        df = process_transcription(combined_result)
+        save_results(df,LOG, CLEANED_CHUNKS)
         
 if __name__ == "__main__":
-    transcribe("/home/bmh/VideoLingo/core/input/808c5a77e3419eeb9017f6029e97a10a.mp4")
+    transcribe("/home/bmh/VideoLingoPlus/core/input/cdc2912a1a812adfbcd67adf39c4494f.mp4")
