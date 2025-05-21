@@ -124,7 +124,8 @@ def main():
 
     # 这里替换为实际的视频文件列表
     video_files = [
-        "/home/bmh/VideoLingoPlus/core/input/28679343296-1-16.mp4"
+        "/home/bmh/VideoLingoPlus/core/input/808c5a77e3419eeb9017f6029e97a10a.mp4",
+        "/home/bmh/VideoLingoPlus/core/input/cdc2912a1a812adfbcd67adf39c4494f.mp4"
     ]
 
     processor.process_videos(video_files)
